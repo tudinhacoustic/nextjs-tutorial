@@ -1,20 +1,42 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import UserValidator from "@/validation/user";
+import ErrorMessage from "@/validation/errorMessage";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 // import { signIn } from "next-auth/react";
 
 const Login = () => {
+  const router = useRouter();
+  const session = useSession();
   const [error, setError] = useState("");
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [session, router]);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const { value, error } = UserValidator.register().validate(user);
+    const { value, error } = UserValidator.login().validate(user);
     if (error) {
       setError(ErrorMessage.handleErrorMessage(error));
       return;
+    }
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: user.email,
+      password: user.password,
+    });
+    if (res?.error) {
+      setError("Invalid email or password");
+      if (res?.url) router.replace("/dashboard");
+    } else {
+      setError("");
     }
   };
   return (
@@ -39,7 +61,7 @@ const Login = () => {
           <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
             Sign In
           </button>
-          <p className="text-red-600 text-[16px] mb-4">{error && error}</p>
+          <p className="text-red-600 text-[16px] mt-4 mb-4">{error && error}</p>
         </form>
         <button
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"

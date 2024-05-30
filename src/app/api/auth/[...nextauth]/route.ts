@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { connectToDB } from "@/utils/database";
 import User from "@/models/user";
+import NextAuth from "next-auth/next";
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -33,3 +34,6 @@ export const authOptions = {
     }),
   ],
 };
+
+export const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

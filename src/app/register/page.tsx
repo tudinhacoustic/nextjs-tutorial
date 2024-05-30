@@ -76,5 +76,3 @@ const Register = () => {
 };
 
 export default Register;
-
-// Because of his understanding of poverty, he has tried to contribute to a renewable project that helps more than 1000 unemployed workers get jobs.

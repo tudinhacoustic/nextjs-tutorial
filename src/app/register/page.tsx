@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import UserValidator from "@/validation/user";
 import ErrorMessage from "@/validation/errorMessage";
+import { useRouter } from "next/navigation";
+
 const Register = () => {
   const [error, setError] = useState("");
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-
+  const router = useRouter();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const { value, error } = UserValidator.register().validate(user);
@@ -25,8 +27,8 @@ const Register = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: user.email,
-          password: user.password,
+          email: value.email,
+          password: value.password,
         }),
       });
       if (!res.ok) {
@@ -35,6 +37,7 @@ const Register = () => {
         setError(toJson.message);
         return;
       }
+      return router.push("/login");
     } catch (error) {
       console.error(error);
     }
@@ -62,7 +65,7 @@ const Register = () => {
             Register
           </button>
         </form>
-        {error ? <p className="text-[#f40000] mt-4">{error}</p> : <></>}
+        {error ? <p className="text-[#f40000] text-base mt-4">{error}</p> : <></>}
         <div className="text-center text-gray-500 mt-4">- OR -</div>
         <Link className="block text-center text-blue-500 hover:underline mt-2" href="/login">
           Login with an existing account
@@ -73,3 +76,5 @@ const Register = () => {
 };
 
 export default Register;
+
+// Because of his understanding of poverty, he has tried to contribute to a renewable project that helps more than 1000 unemployed workers get jobs.

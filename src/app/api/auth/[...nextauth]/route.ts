@@ -6,6 +6,7 @@ import User from "@/models/user";
 import NextAuth from "next-auth/next";
 import config from "@/config/config";
 import { Account, User as AuthUser } from "next-auth";
+import { handleLogin } from "@/app/actions";
 export const authOptions: any = {
   providers: [
     CredentialsProvider({
@@ -25,6 +26,7 @@ export const authOptions: any = {
               return user;
             }
           }
+          await handleLogin(user);
         } catch (err: any) {
           throw new Error(err);
         }
@@ -38,9 +40,11 @@ export const authOptions: any = {
   callbacks: {
     async signIn({ user, account }: { user: AuthUser; account: Account }) {
       if (account?.provider == "credentials") {
+        console.log(account);
         return true;
       }
       if (account?.provider == "github") {
+        console.log(account);
         await connectToDB();
         try {
           const existingUser = await User.findOne({ email: user.email });
@@ -62,3 +66,5 @@ export const authOptions: any = {
 
 export const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
+// birds, flowers, mushrooms, river
